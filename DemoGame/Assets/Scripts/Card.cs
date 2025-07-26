@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class Card : MonoBehaviour
 {
+    public int CardId { get; private set; }
+
     private Sprite _cardFrontImage;
     private Image _cardImage;
 
@@ -17,8 +19,9 @@ public class Card : MonoBehaviour
         _cardImage = GetComponent<Image>();
     }
 
-    public void Setup(Sprite frontImage)
+    public void Setup(int cardId, Sprite frontImage)
     {
+        CardId = cardId;
         _cardFrontImage = frontImage;
         GetComponent<Button>().onClick.AddListener(OnClicked);
         ShowBack();
@@ -28,6 +31,7 @@ public class Card : MonoBehaviour
     {
         Debug.Log("OnClicked");
         ShowFront();
+        LevelManager.Instance.CardFlipped(this);
     }
 
     public void ShowFront()

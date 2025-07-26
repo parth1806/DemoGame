@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
+    public static LevelManager Instance;
 
     [SerializeField] private GridLayoutGroup gridLayoutGroup;
     [SerializeField] private Card cardPrefab;
@@ -12,9 +13,11 @@ public class LevelManager : MonoBehaviour
     private Sprite[] _cardSprites;
     private List<Card> _cards;
     private int[] _shuffledCardsIndex;
-
+    private Card _firstSelectedCard;
+    private Card _secondSelectedCard;
     private void Awake()
     {
+        Instance = this;
         _cardSprites = Resources.LoadAll<Sprite>("AllCards"); // Get all sprites from Resources/AllCards folder.
 
     }
@@ -23,12 +26,6 @@ public class LevelManager : MonoBehaviour
     void Start()
     {
         SpawnCards();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     private void SpawnCards()
@@ -53,9 +50,43 @@ public class LevelManager : MonoBehaviour
                 var card = Instantiate(cardPrefab, gridLayoutGroup.transform);
                 var cardId = _shuffledCardsIndex[cell];
                 var frontImage = _cardSprites[cardId];
-                card.Setup(frontImage);
+                card.Setup(cardId,frontImage);
                 _cards.Add(card);
             }
+        }
+    }
+
+    public void CardFlipped(Card selectedCard)
+    {
+        selectedCard.ShowFront();
+
+        if (_firstSelectedCard == null)
+        {
+            _firstSelectedCard = selectedCard;
+        }
+        else if (_secondSelectedCard == null)
+        {
+            _secondSelectedCard = selectedCard;
+            StartCoroutine(CheckCardMatch(_firstSelectedCard, _secondSelectedCard));
+        }
+    }
+
+    IEnumerator CheckCardMatch(Card firstSelection, Card secondSelection) // Check is card match or not.
+    {
+        _firstSelectedCard = null;
+        _secondSelectedCard = null;
+
+        if (firstSelection.CardId == secondSelection.CardId)
+        {
+            Debug.Log("Card Match");
+        }
+        else
+        {
+            yield return new WaitForSeconds(0.5f);
+
+            Debug.Log("Card Not Match");
+            firstSelection.ShowBack();
+            secondSelection.ShowBack();
         }
     }
 }

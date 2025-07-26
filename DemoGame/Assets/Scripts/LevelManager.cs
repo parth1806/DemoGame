@@ -6,12 +6,14 @@ using UnityEngine.UI;
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance;
+    public GameManager gameManager;
 
     [SerializeField] private GridLayoutGroup gridLayoutGroup;
     [SerializeField] private Card cardPrefab;
 
     private Sprite[] _cardSprites;
     private List<Card> _cards;
+    private List<Card> _clearedCards;
     private int[] _shuffledCardsIndex;
     private Card _firstSelectedCard;
     private Card _secondSelectedCard;
@@ -41,6 +43,7 @@ public class LevelManager : MonoBehaviour
         // update grid layout
         gridLayoutGroup.constraintCount = rows;
         _cards = new List<Card>(rows * columns);
+        _clearedCards = new List<Card>(_cards.Capacity);
 
         for (var i = 0; i < rows; i++)
         {
@@ -79,6 +82,9 @@ public class LevelManager : MonoBehaviour
         if (firstSelection.CardId == secondSelection.CardId)
         {
             Debug.Log("Card Match");
+            _clearedCards.Add(firstSelection);
+            _clearedCards.Add(secondSelection);
+            CheckForLevelComplete();
         }
         else
         {
@@ -87,6 +93,16 @@ public class LevelManager : MonoBehaviour
             Debug.Log("Card Not Match");
             firstSelection.ShowBack();
             secondSelection.ShowBack();
+        }
+    }
+
+    private void CheckForLevelComplete()
+    {
+        if (_clearedCards.Count == _cards.Count)
+        {
+            _clearedCards.Clear();
+            _cards.Clear();
+            gameManager.LevelCompleted();
         }
     }
 }

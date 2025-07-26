@@ -116,6 +116,7 @@ public class LevelManager : MonoBehaviour
             return;
         }
 
+        SoundManager.Instance.CardflipSfx();
         selectedCard.ShowFront();
         OnCardFlipped?.Invoke(_gridSize, _cards);
 
@@ -141,6 +142,7 @@ public class LevelManager : MonoBehaviour
             
             gameManager.ShowScoreCombo(_comboMultiplier);
             gameManager.ScoreAdd(_score * _comboMultiplier);
+            SoundManager.Instance.CardMatchSfx();
 
             _clearedCards.Add(firstSelection);
             _clearedCards.Add(secondSelection);
@@ -153,6 +155,7 @@ public class LevelManager : MonoBehaviour
             
             gameManager.ShowScoreCombo(_comboMultiplier);
             yield return new WaitForSeconds(0.5f);
+            SoundManager.Instance.CardNotMatchSfx();
 
             Debug.Log("Card Not Match");
             firstSelection.ShowBack();
@@ -166,6 +169,7 @@ public class LevelManager : MonoBehaviour
     {
         if (_clearedCards.Count == _cards.Count)
         {
+            SoundManager.Instance.GameCompleteSfx();
             _clearedCards.Clear();
             _cards.Clear();
             gameManager.LevelCompleted();
